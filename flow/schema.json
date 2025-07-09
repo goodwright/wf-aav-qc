@@ -1,0 +1,100 @@
+{
+    "inputs": [
+        {
+            "name": "Sample Options",
+            "description": "Parameters relating to the sample being analysed.",
+            "advanced": false,
+            "params": {
+                "fastq": {
+                    "name": "Samples",
+                    "description": "The samples to process.",
+                    "required": true,
+                    "type": "data",
+                    "sample_types": ["amplicon"],
+                    "pattern": "^\\S+\\.fq?(\\.gz)?$"
+                }
+            }
+        },
+        {
+            "name": "Reference Options",
+            "description": "Parameters relating to the reference being used.",
+            "advanced": false,
+            "params": {
+                "ref_helper": {
+                    "name": "Reference Helper",
+                    "description": "The reference helper file to use for the analysis.",
+                    "required": false,
+                    "type": "data",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "render": true
+                },
+                "ref_host": {
+                    "name": "Reference Host",
+                    "description": "The reference host file to use for the analysis.",
+                    "required": false,
+                    "type": "data",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "render": true
+                },
+                "ref_rep_cap": {
+                    "name": "Reference Rep Cap",
+                    "description": "The reference rep cap file to use for the analysis.",
+                    "required": false,
+                    "type": "data",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "render": true
+                },
+                "ref_transgene_plasmid": {
+                    "name": "Reference Transgene Plasmid",
+                    "description": "The reference transgene plasmid file to use for the analysis.",
+                    "required": false,
+                    "type": "data",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "render": true
+                },
+                "itr1_start": {
+                    "name": "Itr1 Start",
+                    "description": "The Itr1 start to use for the analysis.",
+                    "required": false,
+                    "type": "integer",
+                    "render": true
+                },
+                "itr1_end": {
+                    "name": "Itr1 End",
+                    "description": "The Itr1 end to use for the analysis.",
+                    "required": false,
+                    "type": "integer",
+                    "render": true
+                },
+                "itr2_start": {
+                    "name": "Itr2 Start",
+                    "description": "The Itr2 start to use for the analysis.",
+                    "required": false,
+                    "type": "integer",
+                    "render": true
+                },
+                "itr2_end": {
+                    "name": "Itr2 End",
+                    "description": "The Itr2 end to use for the analysis.",
+                    "required": false,
+                    "type": "integer",
+                    "render": true
+                }
+            }
+        }
+    ],
+    "outputs": [
+        {
+            "name": "Summary report",
+            "description": "Summary report of the analysis.",
+            "filetype": "html",
+            "process": "makeReport"
+        },
+        {
+            "name": "TSVs",
+            "description": "TSVs of the analysis.",
+            "filetype": "tsv",
+            "process": "aav_structures"
+        }
+    ]
+}
