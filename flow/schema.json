@@ -4,14 +4,30 @@
             "name": "Sample Options",
             "description": "Parameters relating to the sample being analysed.",
             "advanced": false,
+            "modes": ["FASTQ", "BAM"],
             "params": {
                 "fastq": {
-                    "name": "Samples",
-                    "description": "The samples to process.",
+                    "name": "Sample",
+                    "description": "A sample fastq file to use in the analysis.",
                     "required": true,
                     "type": "data",
+                    "modes": ["FASTQ"],
                     "sample_types": ["amplicon"],
                     "pattern": "^\\S+\\.fq?(\\.gz)?$"
+                },
+                "bam": {
+                    "name": "Sample",
+                    "type": "data",
+                    "required": true,
+                    "modes": ["BAM"],
+                    "pattern": "^\\S+\\.bam$",
+                    "description": "A sample BAM or unaligned BAM (uBAM) files to use in the analysis."
+                },
+                "sample": {
+                    "name": "Sample Name",
+                    "type": "string",
+                    "modes": ["FASTQ", "BAM"],
+                    "description": "The name to use for the sample."
                 }
             }
         },
@@ -20,80 +36,187 @@
             "description": "Parameters relating to the reference being used.",
             "advanced": false,
             "params": {
-                "ref_helper": {
-                    "name": "Reference Helper",
-                    "description": "The reference helper file to use for the analysis.",
-                    "required": false,
+                "ref_transgene_plasmid": {
+                    "name": "Ref Transgene Plasmid",
+                    "title": "Transgene plasmid",
+                    "required": true,
                     "type": "data",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "render": true
+                    "pattern": "^\\S+\\.fasta(\\.gz)?$",
+                    "description": "The transgene plasmid FASTA file."
                 },
                 "ref_host": {
-                    "name": "Reference Host",
-                    "description": "The reference host file to use for the analysis.",
-                    "required": false,
+                    "name": "Ref Host",
+                    "title": "Host reference",
                     "type": "data",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "render": true
+                    "pattern": "^\\S+\\.fasta(\\.gz)?$",
+                    "description": "The reference FASTA file for the host organism (.fasta/fasta.gz)."
+                },
+                "ref_helper": {
+                    "name": "Ref Helper",
+                    "title": "Helper plasmid",
+                    "type": "data",
+                    "pattern": "^\\S+\\.fasta(\\.gz)?$",
+                    "description": "The helper plasmid FASTA file."
                 },
                 "ref_rep_cap": {
-                    "name": "Reference Rep Cap",
-                    "description": "The reference rep cap file to use for the analysis.",
-                    "required": false,
+                    "name": "Ref Rep Cap",
+                    "title": "Rep/cap plasmid",
                     "type": "data",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "render": true
+                    "pattern": "^\\S+\\.fasta(\\.gz)?$",
+                    "description": "The rep/cap plasmid FASTA file."
                 },
-                "ref_transgene_plasmid": {
-                    "name": "Reference Transgene Plasmid",
-                    "description": "The reference transgene plasmid file to use for the analysis.",
-                    "required": false,
+                "non_transgene_refs": {
+                    "name": "Non Transgene Refs",
+                    "title": "Non-transgene reference files",
                     "type": "data",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "render": true
+                    "pattern": "",
+                    "description": "A path to a folder containing reference sequences for all non-transgene plasmid sequences."
+                }
+            }
+        },
+        {
+            "name": "ITR Integrity & Read-Classification",
+            "description": "Inputs and thresholds for ITR checks, backbone detection, and read classification.",
+            "advanced": false,
+            "params": {
+                "analyse_unclassified": {
+                    "name": "Analyse Unclassified",
+                    "type": "boolean",
+                    "default": "false",
+                    "title": "Analyse unclassified reads",
+                    "description": "Analyse unclassified reads from input directory. By default the workflow will not process reads in the unclassified directory."
+                },
+                "transgene_bed": {
+                    "name": "Transgene Bed",
+                    "title": "feature BED",
+                    "type": "data",
+                    "pattern": "^\\S+\\.bed$",
+                    "description": "A BED file describing transgene plasmid feature locations."
+                },
+                "itr_fl_threshold": {
+                    "name": "Itr Fl Threshold",
+                    "title": "ITR full length threshold",
+                    "type": "number",
+                    "description": "The maximum number of bases missing from an ITR in order for it to be classed as a full length ITR.",
+                    "default": 100
+                },
+                "itr_backbone_threshold": {
+                    "name": "Itr Backbone Threshold",
+                    "title": "ITR backbone threshold",
+                    "type": "number",
+                    "description": "The maximum number of bases and alignment is allowed to extended outside of the ITR-ITR region for an associated read to not be classed as `backbone`.",
+                    "default": 20
                 },
                 "itr1_start": {
                     "name": "Itr1 Start",
-                    "description": "The Itr1 start to use for the analysis.",
-                    "required": false,
-                    "type": "integer",
-                    "render": true
+                    "title": "ITR1 start",
+                    "type": "number",
+                    "description": "The start position of ITR1."
                 },
                 "itr1_end": {
                     "name": "Itr1 End",
-                    "description": "The Itr1 end to use for the analysis.",
-                    "required": false,
-                    "type": "integer",
-                    "render": true
+                    "title": "ITR1 end",
+                    "type": "number",
+                    "description": "The end position of ITR2."
                 },
                 "itr2_start": {
                     "name": "Itr2 Start",
-                    "description": "The Itr2 start to use for the analysis.",
-                    "required": false,
-                    "type": "integer",
-                    "render": true
+                    "title": "ITR2 start",
+                    "type": "number",
+                    "description": "The start position of ITR2."
                 },
                 "itr2_end": {
                     "name": "Itr2 End",
-                    "description": "The Itr2 end to use for the analysis.",
-                    "required": false,
-                    "type": "integer",
-                    "render": true
+                    "title": "ITR2 end",
+                    "type": "number",
+                    "description": "The end position of ITR2."
+                },
+                "symmetry_threshold": {
+                    "name": "Symmetry Threshold",
+                    "title": "Alignment symmetry threshold",
+                    "type": "number",
+                    "description": "The threshold to consider whether the start or end positions on opposite strands are classed as symmetrical or asymmetrical.",
+                    "default": 10
+                }
+            }
+        },
+        {
+            "name": "Output Options",
+            "description": "Parameters for saving and naming workflow outputs.",
+            "advanced": true,
+            "params": {
+                "output_genometype_bams": {
+                    "name": "Output Genometype Bams",
+                    "title": "Output BAMs by genome type",
+                    "type": "boolean",
+                    "default": "false",
+                    "description": "If true, output a BAM file per identified AAV genome structure type. Otherwise output a BAM file per sample."
+                },
+                "igv": {
+                    "name": "Igv",
+                    "type": "boolean",
+                    "default": "false",
+                    "title": "IGV",
+                    "description": "Enable IGV visualisation in the EPI2ME Desktop Application by creating the required files."
+                }
+            }
+        },
+        {
+            "name": "Advanced Options",
+            "description": "Advanced options for configuring processes inside the workflow.",
+            "advanced": true,
+            "params": {
+                "override_basecaller_cfg": {
+                    "name": "Override Basecaller Cfg",
+                    "type": "string",
+                    "title": "Override basecaller configuration",
+                    "description": "Override auto-detected basecaller model that processed the signal data; used to select an appropriate Medaka model.",
+                    "valid": [
+                        "dna_r10.4.1_e8.2_400bps_sup@v5.0.0",
+                        "dna_r10.4.1_e8.2_400bps_hac@v5.0.0",
+                        "dna_r10.4.1_e8.2_400bps_sup@v4.3.0",
+                        "dna_r10.4.1_e8.2_400bps_hac@v4.3.0",
+                        "dna_r10.4.1_e8.2_400bps_sup@v4.2.0",
+                        "dna_r10.4.1_e8.2_400bps_hac@v4.2.0",
+                        "dna_r10.4.1_e8.2_260bps_hac@v4.1.0",
+                        "dna_r10.4.1_e8.2_260bps_sup@v4.1.0",
+                        "dna_r10.4.1_e8.2_400bps_hac@v4.1.0",
+                        "dna_r10.4.1_e8.2_400bps_sup@v4.1.0",
+                        "dna_r10.4.1_e8.2_260bps_hac@v4.0.0",
+                        "dna_r10.4.1_e8.2_260bps_sup@v4.0.0",
+                        "dna_r10.4.1_e8.2_400bps_hac@v4.0.0",
+                        "dna_r10.4.1_e8.2_400bps_sup@v4.0.0",
+                        "dna_r10.4.1_e8.2_400bps_hac@v3.5.2",
+                        "dna_r10.4.1_e8.2_400bps_sup@v3.5.2",
+                        "dna_r9.4.1_e8_fast@v3.4",
+                        "dna_r9.4.1_e8_hac@v3.3",
+                        "dna_r9.4.1_e8_sup@v3.3",
+                        "dna_r10.4.1_e8.2_400bps_hac_prom",
+                        "dna_r9.4.1_450bps_hac_prom",
+                        "dna_r10.3_450bps_hac",
+                        "dna_r10.3_450bps_hac_prom",
+                        "dna_r10.4.1_e8.2_260bps_hac",
+                        "dna_r10.4.1_e8.2_260bps_hac_prom",
+                        "dna_r10.4.1_e8.2_400bps_hac",
+                        "dna_r9.4.1_450bps_hac",
+                        "dna_r9.4.1_e8.1_hac",
+                        "dna_r9.4.1_e8.1_hac_prom"
+                    ]
                 }
             }
         }
     ],
     "outputs": [
         {
-            "name": "Summary report",
-            "description": "Summary report of the analysis.",
+            "name": "Workflow report",
+            "description": "Report for all samples.",
             "filetype": "html",
             "process": "makeReport"
         },
         {
-            "name": "TSVs",
-            "description": "TSVs of the analysis.",
-            "filetype": "tsv",
+            "name": "Alignments",
+            "description": "The resulting tagged BAM file from mapping reads to the combined reference.",
+            "filetype": "",
             "process": "aav_structures"
         }
     ]
